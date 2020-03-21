@@ -6,20 +6,7 @@ class Person {
 
   String name;
   String height;
-  String mass;
-  String hairColor;
-  String skinColor;
-  String eyeColor;
-  String birthYear;
-  String gender;
-  String homeworld;
-  List<String> films;
-  List<String> species;
-  List<String> vehicles;
-  List<String> starships;
-  String created;
-  String edited;
-  String url;
+
 
   Person(
   this.name,
@@ -29,20 +16,7 @@ class Person {
   Person.fromJson(Map<String, dynamic> json) {
   name = json['name'];
   height = json['height'];
-  mass = json['mass'];
-  hairColor = json['hair_color'];
-  skinColor = json['skin_color'];
-  eyeColor = json['eye_color'];
-  birthYear = json['birth_year'];
-  gender = json['gender'];
-  homeworld = json['homeworld'];
-  films = json['films'].cast<String>();
-  species = json['species'].cast<String>();
-  vehicles = json['vehicles'].cast<String>();
-  starships = json['starships'].cast<String>();
-  created = json['created'];
-  edited = json['edited'];
-  url = json['url'];
+
   }
 
   static Future<List<Person>> getPersons() async {
@@ -61,5 +35,15 @@ class Person {
     log("banyaknya getperson" + persons.length.toString());
     return persons;
   }
+
+  Map<String, dynamic> toMaap() {
+    Map<String, dynamic> map = Map<String, dynamic>();
+    map['name'] = name;
+    map['height'] = height;
+    return map;
+  }
+
+
+
 }
 

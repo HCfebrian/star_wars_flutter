@@ -6,7 +6,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 import 'model/Person.dart';
-import 'model/contact.dart';
+
 //pubspec.yml
 //kelass Dbhelper
 class DbHelper {
@@ -22,19 +22,19 @@ class DbHelper {
   Future<Database> initDb() async {
     //untuk menentukan nama database dan lokasi yg dibuat
     Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path + 'contact.db';
+    String path = directory.path + 'person_database.db';
     //create, read databases
-    var todoDatabase = openDatabase(path, version: 1, onCreate: _createDb);
+    var todoDatabase = openDatabase(path, version: 2, onCreate: _createDb);
     //mengembalikan nilai object sebagai hasil dari fungsinya
     return todoDatabase;
   }
-  //buat tabel baru dengan nama contact
+  //buat tabel baru dengan nama person
   void _createDb(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE contact (
+      CREATE TABLE person (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
-        phone TEXT
+        height TEXT
       )
     ''');
   }
@@ -46,38 +46,38 @@ class DbHelper {
   }
   Future<List<Map<String, dynamic>>> select() async {
     Database db = await this.database;
-    var mapList = await db.query('contact', orderBy: 'name');
+    var mapList = await db.query('person', orderBy: 'name');
     return mapList;
   }
 //create databases
-  Future<int> insert(Contact object) async {
+  Future<int> insert(Person object) async {
     Database db = await this.database;
-    int count = await db.insert('contact', object.toMap());
+    int count = await db.insert('person', object.toMaap());
     return count;
   }
 //update databases
-  Future<int> update(Contact object) async {
+  Future<int> update(Person object) async {
     Database db = await this.database;
-    int count = await db.update('contact', object.toMap(),
-        where: 'id=?',
-        whereArgs: [object.id]);
+    int count = await db.update('person', object.toMaap(),
+        where: 'name=?',
+        whereArgs: [object.name]);
     return count;
   }
 //delete databases
   Future<int> delete(String name) async {
     Database db = await this.database;
-    int count = await db.delete('contact',
+    int count = await db.delete('person',
         where: 'name=?',
         whereArgs: [name]);
     return count;
   }
-  Future<List<Person>> getContactList() async {
-    var contactMapList = await select();
-    int count = contactMapList.length;
-    List<Person> contactList = List<Person>();
-//    for (int i=0; i<count; i++) {
-//      contactList.add(Person.(contactMapList[i]));
-//    }
-    return contactList;
+  Future<List<Person>> getpersonList() async {
+    var personMapList = await select();
+    int count = personMapList.length;
+    List<Person> personList = List<Person>();
+    for (int i=0; i<count; i++) {
+      personList.add(Person.fromJson(personMapList[i]));
+    }
+    return personList;
   }
 }

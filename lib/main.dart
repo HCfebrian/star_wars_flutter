@@ -5,8 +5,6 @@ import 'package:sqflite/sqflite.dart';
 import 'DbHelper.dart';
 import 'enttryform.dart';
 import 'model/Person.dart';
-import 'model/contact.dart';
-import 'dart:developer';
 
 void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
@@ -34,16 +32,19 @@ class HomeState extends State<Home> {
   List<Person> listPerson;
   int count = 0;
 
+
   void initState(){
     super.initState();
+    updateListView();
 
-
-    Person.getPersons().then((persons) {
-      setState(() {
-        listPerson = persons;
-        count = listPerson.length;
-      });
-    });
+//    Person.getPersons().then((persons) {
+//      setState(() {
+//        for(int i=0; i<persons.length; i++){
+//          addContact(persons[i]);
+//
+//        }
+//      });
+//    });
 
   }
 
@@ -69,7 +70,7 @@ class HomeState extends State<Home> {
       ),
     );
   }
-  Future<Contact> navigateToEntryForm(BuildContext context, Person person) async {
+  Future<Person> navigateToEntryForm(BuildContext context, Person person) async {
     var result = await Navigator.push(
         context,
         MaterialPageRoute(
@@ -110,14 +111,14 @@ class HomeState extends State<Home> {
     );
   }
   //buat contact
-  void addContact(Contact object) async {
+  void addContact(Person object) async {
     int result = await dbHelper.insert(object);
     if (result > 0) {
       updateListView();
     }
   }
   //edit contact
-  void editContact(Contact object) async {
+  void editContact(Person object) async {
     int result = await dbHelper.update(object);
     if (result > 0) {
       updateListView();
@@ -134,7 +135,7 @@ class HomeState extends State<Home> {
   void updateListView() {
     final Future<Database> dbFuture = dbHelper.initDb();
     dbFuture.then((database) {
-      Future<List<Person>> listPersonFuture = dbHelper.getContactList();
+      Future<List<Person>> listPersonFuture = dbHelper.getpersonList();
       listPersonFuture.then((listPerson) {
         setState(() {
           this.listPerson = listPerson;
