@@ -1,3 +1,4 @@
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
@@ -7,6 +8,7 @@ import 'enttryform.dart';
 import 'model/Person.dart';
 
 void main() => runApp(MyApp());
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -23,28 +25,25 @@ class MyApp extends StatelessWidget {
 }
 
 class Home extends StatefulWidget {
-
   @override
   HomeState createState() => HomeState();
 }
-class HomeState extends State<Home> {
 
+class HomeState extends State<Home> {
   List<Person> listPerson;
   int count = 0;
+  bool asce = true;
 
-
-  void initState(){
+  void initState() {
     super.initState();
-    updateListView();
-
-//    Person.getPersons().then((persons) {
-//      setState(() {
-//        for(int i=0; i<persons.length; i++){
-//          addContact(persons[i]);
-//
-//        }
-//      });
-//    });
+      Person.getPersons().then((persons) {
+      setState(() {
+        for(int i=0; i<persons.length; i++){
+          addContact(persons[i]);
+        }
+        log("nilai count adalah dalam getperson "+ count.toString());
+      });
+    });
 
   }
 
@@ -57,9 +56,28 @@ class HomeState extends State<Home> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text('SQFlite'),
+        title: Text('Star Wars '),
+//        leading: Icon(
+//          Icons.cached,
+//        ),
+        actions: <Widget>[
+          Padding(
+              padding: EdgeInsets.only(right: 20.0),
+              child: GestureDetector(
+                onTap: () {
+                  asce = !asce;
+                  updateListView();
+                  log(listPerson[1].name);
+                },
+                child: Icon(
+                  Icons.cached,
+                  size: 26.0,
+                ),
+              )
+          ),
+        ],
       ),
-      body: createListView(),
+      body: createListView(false),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         tooltip: 'Tambah Data',
@@ -69,21 +87,22 @@ class HomeState extends State<Home> {
         },
       ),
     );
+
   }
-  Future<Person> navigateToEntryForm(BuildContext context, Person person) async {
-    var result = await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (BuildContext context) {
-              return EntryForm(person);
-            }
-        )
-    );
+
+  Future<Person> navigateToEntryForm(
+      BuildContext context, Person person) async {
+    var result = await Navigator.push(context,
+        MaterialPageRoute(builder: (BuildContext context) {
+      return EntryForm(person);
+    }));
     return result;
   }
-  ListView createListView() {
+
+  ListView createListView(bool dscd) {
     TextStyle textStyle = Theme.of(context).textTheme.subhead;
     return ListView.builder(
+      reverse: dscd,
       itemCount: count,
       itemBuilder: (BuildContext context, int index) {
         return Card(
@@ -94,7 +113,10 @@ class HomeState extends State<Home> {
               backgroundColor: Colors.red,
               child: Icon(Icons.people),
             ),
-            title: Text(this.listPerson[index].name, style: textStyle,),
+            title: Text(
+              this.listPerson[index].name,
+              style: textStyle,
+            ),
             trailing: GestureDetector(
               child: Icon(Icons.delete),
               onTap: () {
@@ -102,7 +124,8 @@ class HomeState extends State<Home> {
               },
             ),
             onTap: () async {
-              var contact = await navigateToEntryForm(context, this.listPerson[index]);
+              var contact =
+                  await navigateToEntryForm(context, this.listPerson[index]);
               if (contact != null) editContact(contact);
             },
           ),
@@ -110,6 +133,7 @@ class HomeState extends State<Home> {
       },
     );
   }
+
   //buat contact
   void addContact(Person object) async {
     int result = await dbHelper.insert(object);
@@ -117,6 +141,7 @@ class HomeState extends State<Home> {
       updateListView();
     }
   }
+
   //edit contact
   void editContact(Person object) async {
     int result = await dbHelper.update(object);
@@ -124,6 +149,7 @@ class HomeState extends State<Home> {
       updateListView();
     }
   }
+
   //delete contact
   void deleteContact(Person object) async {
     var result = await dbHelper.delete(object.name);
@@ -131,6 +157,7 @@ class HomeState extends State<Home> {
       updateListView();
     }
   }
+
   //update contact
   void updateListView() {
     final Future<Database> dbFuture = dbHelper.initDb();
@@ -138,8 +165,15 @@ class HomeState extends State<Home> {
       Future<List<Person>> listPersonFuture = dbHelper.getpersonList();
       listPersonFuture.then((listPerson) {
         setState(() {
-          this.listPerson = listPerson;
+
+          if(asce == true){
+            this.listPerson = listPerson;
+          }else{
+            this.listPerson = listPerson.reversed.toList();
+          }
           this.count = listPerson.length;
+
+
         });
       });
     });

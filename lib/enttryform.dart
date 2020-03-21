@@ -23,7 +23,13 @@ class EntryFormState extends State<EntryForm> {
     return Scaffold(
         appBar: AppBar(
           title: person == null ? Text('Tambah') : Text('Rubah'),
-          leading: Icon(Icons.keyboard_arrow_left),
+          leading: IconButton(
+            tooltip: 'Previous choice',
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context, person);
+            },
+          ),
         ),
         body: Padding(
           padding: EdgeInsets.only(top: 15.0, left:10.0, right:10.0),

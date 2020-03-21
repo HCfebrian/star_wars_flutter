@@ -7,7 +7,6 @@ class Person {
   String name;
   String height;
 
-
   Person(
   this.name,
   this.height,
