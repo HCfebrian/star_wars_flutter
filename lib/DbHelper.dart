@@ -28,7 +28,7 @@ class DbHelper {
   Future<Database> initDb() async {
     //untuk menentukan nama database dan lokasi yg dibuat
     Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path + 'person.db';
+    String path = directory.path + 'starwarsdb.db';
     //create, read databases
     var todoDatabase = openDatabase(path, version: 1, onCreate: _createDb);
     //mengembalikan nilai object sebagai hasil dari fungsinya
@@ -41,7 +41,17 @@ class DbHelper {
       CREATE TABLE person (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
-        height TEXT
+        height TEXT,
+        mass TEXT,
+        hair_color TEXT,
+        skin_color TEXT,
+        eye_color TEXT,
+        birth_year TEXT,
+        gender TEXT,
+        homeworld TEXT,
+        created TEXT,
+        edited TEXT,
+        url TEXT 
       )
     ''');
   }
@@ -67,7 +77,7 @@ class DbHelper {
 
   Future<List<Map<String, dynamic>>> selectdscd() async {
     Database db = await this.database;
-    var mapList = await db.query('person', orderBy: 'name' );
+    var mapList = await db.query('person', orderBy: 'name');
     return mapList;
   }
 

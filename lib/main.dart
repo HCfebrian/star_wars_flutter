@@ -42,6 +42,7 @@ class HomeState extends State<Home> {
           addContact(persons[i]);
         }
         log("nilai count adalah dalam getperson "+ count.toString());
+        log("get mass "+ persons[1].mass);
       });
     });
 
@@ -136,6 +137,7 @@ class HomeState extends State<Home> {
 
   //buat contact
   void addContact(Person object) async {
+    log(object.toMaap().toString());
     int result = await dbHelper.insert(object);
     if (result > 0) {
       updateListView();
