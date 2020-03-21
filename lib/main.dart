@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'DbHelper.dart';
@@ -34,17 +35,33 @@ class HomeState extends State<Home> {
   int count = 0;
   bool asce = true;
 
+  Future checkFirstSeen() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool _seen = (prefs.getBool('seen') ?? false);
+
+    log("boool " + _seen.toString());
+
+    if (_seen) {
+      updateListView();
+      log("bukaan");
+    } else{
+      await prefs.setBool('seen', true);
+      Person.getPersons().then((persons) {
+        setState(() {
+          for(int i=0; i<persons.length; i++){
+            addContact(persons[i]);
+          }
+          log("nilai count adalah dalam getperson "+ count.toString());
+          log("get mass "+ persons[1].mass);
+        });
+      });
+    }
+  }
+
   void initState() {
     super.initState();
-      Person.getPersons().then((persons) {
-      setState(() {
-        for(int i=0; i<persons.length; i++){
-          addContact(persons[i]);
-        }
-        log("nilai count adalah dalam getperson "+ count.toString());
-        log("get mass "+ persons[1].mass);
-      });
-    });
+    log("jalan njir");
+      checkFirstSeen();
 
   }
 
@@ -138,8 +155,9 @@ class HomeState extends State<Home> {
   //buat contact
   void addContact(Person object) async {
     log(object.toMaap().toString());
-    int result = await dbHelper.insert(object);
-    if (result > 0) {
+    List<Map<String, dynamic>>result = await dbHelper.insert(object);
+    updateListView();
+    if (result.length > 0) {
       updateListView();
     }
   }

@@ -1,12 +1,9 @@
-import 'package:sqflite/sqflite.dart';
 import 'dart:async';
-
-//mendukug pemrograman asinkron
+import 'dart:developer';
 import 'dart:io';
 
-//bekerja pada file dan directory
 import 'package:path_provider/path_provider.dart';
-import 'package:starwarsapplication/main.dart';
+import 'package:sqflite/sqflite.dart';
 
 import 'model/Person.dart';
 
@@ -30,7 +27,7 @@ class DbHelper {
     Directory directory = await getApplicationDocumentsDirectory();
     String path = directory.path + 'starwarsdb.db';
     //create, read databases
-    var todoDatabase = openDatabase(path, version: 1, onCreate: _createDb);
+    var todoDatabase = openDatabase(path, version: 5, onCreate: _createDb);
     //mengembalikan nilai object sebagai hasil dari fungsinya
     return todoDatabase;
   }
@@ -81,11 +78,20 @@ class DbHelper {
     return mapList;
   }
 
-//create databases
-  Future<int> insert(Person object) async {
+////create databases
+//  Future<int> insert(Person object) async {
+//    Database db = await this.database;
+//    int count = await db.insert('person', object.toMaap());
+//    return count;
+//  }
+  Future<List<Map<String, dynamic>>> insert(Person object) async {
     Database db = await this.database;
-    int count = await db.insert('person', object.toMaap());
-    return count;
+
+    log("REPLACE INTO person(name) VALUES (\"" +
+        object.name+"\")");
+
+    return db.rawQuery("REPLACE INTO person(name) VALUES (\'" +
+        object.name+"\')");
   }
 
 //update databases
