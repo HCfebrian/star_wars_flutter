@@ -16,6 +16,7 @@ class EntryForm extends StatefulWidget {
 //class controller
 class EntryFormState extends State<EntryForm> {
   Person person;
+  bool _textEmpty = true;
 
   EntryFormState(this.person);
 
@@ -269,7 +270,8 @@ class EntryFormState extends State<EntryForm> {
                   controller: urlController,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    labelText: 'url',
+                    labelText: 'Unique ID',
+                    errorText: _textEmpty ? 'value Can\'t be empty' : null,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),
                     ),
@@ -295,7 +297,7 @@ class EntryFormState extends State<EntryForm> {
                           textScaleFactor: 1.5,
                         ),
                         onPressed: () {
-                        _saveDialog(context);
+                          urlController.text.isEmpty ? _textEmpty = true : _saveDialog(context) ;
                         },
                       ),
                     ),
@@ -338,7 +340,6 @@ class EntryFormState extends State<EntryForm> {
             RaisedButton(
               child: new Text("Yes"),
               onPressed: () {
-                log("delete dong");
                 Navigator.of(context).pop();
                 Navigator.pop(formContex);
               },
@@ -348,7 +349,6 @@ class EntryFormState extends State<EntryForm> {
               child: new Text("NO"),
               color: Colors.blue,
               onPressed: () {
-                log("cancel dong");
                 Navigator.of(context).pop();
               },
             ),

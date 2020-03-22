@@ -40,11 +40,6 @@ class Person {
   String birthYear;
   String gender;
   String homeworld;
-
-//  List<String> films;
-//  List<String> species;
-//  List<String> vehicles;
-//  List<String> starships;
   String created;
   String edited;
   String url;
@@ -59,14 +54,9 @@ class Person {
       this.birthYear,
       this.gender,
       this.homeworld,
-//      this.films,
-//      this.species,
-//      this.vehicles,
-//      this.starships,
       this.created,
       this.edited,
-      this.url
-      );
+      this.url);
 
   Person.fromJson(Map<String, dynamic> json) {
     name = json['name'];
@@ -78,10 +68,6 @@ class Person {
     birthYear = json['birth_year'];
     gender = json['gender'];
     homeworld = json['homeworld'];
-//    films = json['films'].cast<String>();
-//    species = json['species'].cast<String>();
-//    vehicles = json['vehicles'].cast<String>();
-//    starships = json['starships'].cast<String>();
     created = json['created'];
     edited = json['edited'];
     url = json['url'];
@@ -98,10 +84,6 @@ class Person {
     map['birth_year'] = this.birthYear;
     map['gender'] = this.gender;
     map['homeworld'] = this.homeworld;
-//    map['films'] = this.films;
-//    map['species'] = this.species;
-//    map['vehicles'] = this.vehicles;
-//    map['starships'] = this.starships;
     map['created'] = this.created;
     map['edited'] = this.edited;
     map['url'] = this.url;

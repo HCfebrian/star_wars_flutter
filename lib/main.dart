@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       //judul
       debugShowCheckedModeBanner: false,
-      title: 'Tambahkan Daftar',
+      title: 'StarWars APP',
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
@@ -32,7 +32,6 @@ class Home extends StatefulWidget {
 class HomeState extends State<Home> {
 
   bool descending = false;
-
   Future checkFirstSeen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool _seen = (prefs.getBool('seen') ?? false);
@@ -97,9 +96,9 @@ class HomeState extends State<Home> {
         child: Icon(Icons.add),
         tooltip: 'Tambah Data',
         onPressed: () async {
-          var contact = await navigateToEntryForm(context, null);
-          bloc.insetPerson(contact);
-          log("ini nih nama" + contact.name);
+          var person = await navigateToEntryForm(context, null);
+          bloc.insetPerson(person);
+          log("ini nih nama" + person.name);
         },
       ),
     );
@@ -161,7 +160,7 @@ class HomeState extends State<Home> {
           child: ListTile(
             leading: CircleAvatar(
               backgroundColor: Colors.red,
-              child: Icon(Icons.people),
+              child: Icon(Icons.account_circle),
             ),
             title: Text(
               snapshot
@@ -175,19 +174,17 @@ class HomeState extends State<Home> {
               },
             ),
             onTap: () async {
-              Person contact = await navigateToEntryForm(
+              Person person = await navigateToEntryForm(
                   context,
                   snapshot
                       .data[dscd ? (snapshot.data.length - 1) - index : index]);
-              log("ini nilai kembalian kalau edit " +
-                  contact.toJson().toString());
-              if (contact != null) bloc.updatePerson(contact);
+
+              if (person != null) bloc.updatePerson(person);
               bloc.getAllPerson();
             },
           ),
         );
       },
     );
-
   }
 }

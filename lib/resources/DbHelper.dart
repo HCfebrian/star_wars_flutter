@@ -7,8 +7,6 @@ import 'package:sqflite/sqflite.dart';
 
 import '../models/Persons.dart';
 
-//pubspec.yml
-//kelass Dbhelper
 class DbHelper {
   static DbHelper _dbHelper;
   static Database _database;
@@ -23,16 +21,12 @@ class DbHelper {
   }
 
   Future<Database> initDb() async {
-    //untuk menentukan nama database dan lokasi yg dibuat
     Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path + 'starwardb.db';
-    //create, read databases
-    var todoDatabase = openDatabase(path, version: 1, onCreate: _createDb);
-    //mengembalikan nilai object sebagai hasil dari fungsinya
-    return todoDatabase;
+    String path = directory.path + 'strwrs.db';
+    var db = openDatabase(path, version: 1, onCreate: _createDb);
+    return db;
   }
 
-  //buat tabel baru dengan nama person
   void _createDb(Database db, int version) async {
     await db.execute('''
       CREATE TABLE person (
@@ -49,6 +43,8 @@ class DbHelper {
         edited TEXT,
         url TEXT PRIMARY KEY
       )
+      
+      CREATE TABLE species()
     ''');
   }
 
@@ -59,39 +55,32 @@ class DbHelper {
     return _database;
   }
 
-
-  Future<List<Map<String, dynamic>>> selectascd() async {
+  Future<List<Map<String, dynamic>>> select() async {
     Database db = await this.database;
     var mapList = await db.query('person', orderBy: 'name');
     return mapList;
   }
 
-//create databases
-  Future<int> insert(Person object) async {
+  Future insert(Person object) async {
     Database db = await this.database;
-    int count = await db.insert('person', object.toJson());
-    return count;
+    db.insert('person', object.toJson());
   }
-//
 
 //update databases
-  Future<int> update(Person object) async {
-    log("ini nilai person didalam db helper " + object.toJson().toString());
+  Future update(Person object) async {
     Database db = await this.database;
-    int count = await db.update('person', object.toJson(),
+    db.update('person', object.toJson(),
         where: 'url=?', whereArgs: [object.url]);
-    return count;
   }
 
 //delete databases
-  Future<int> delete(String url) async {
+  Future delete(String url) async {
     Database db = await this.database;
-    int count = await db.delete('person', where: 'url=?', whereArgs: [url]);
-    return count;
+    db.delete('person', where: 'url=?', whereArgs: [url]);
   }
 
-  Future<List<Person>> getpersonList() async {
-    var personMapList = await selectascd();
+  Future<List<Person>> getPersonList() async {
+    var personMapList = await select();
     int count = personMapList.length;
     List<Person> personList = List<Person>();
     for (int i = 0; i < count; i++) {

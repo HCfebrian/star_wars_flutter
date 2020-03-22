@@ -19,13 +19,13 @@ class PersonBloc{
   }
 
   getAllPerson() async{
-    _personFetcher.sink.add(await _repository.dbHelper.getpersonList());
+    _personFetcher.sink.add(await _repository.dbHelper.getPersonList());
   }
 
   updatePerson(Person person) async{
     log("dibagian person_bloc"+ person.toJson().toString());
     await _repository.updatePerson(person);
-//    getAllPerson();
+    getAllPerson();
   }
 
   insetPerson(Person person) async{
