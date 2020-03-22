@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+
 import 'model/Person.dart';
 
 class EntryForm extends StatefulWidget {
@@ -54,7 +57,7 @@ class EntryFormState extends State<EntryForm> {
             tooltip: 'Previous choice',
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.pop(context, person);
+              Navigator.pop(context);
             },
           ),
         ),
@@ -292,40 +295,7 @@ class EntryFormState extends State<EntryForm> {
                           textScaleFactor: 1.5,
                         ),
                         onPressed: () {
-                          if (person == null) {
-                            // tambah data
-                            person = Person(
-                              nameController.text,
-                              heightController.text,
-                              massController.text,
-                              hairColorController.text,
-                              skinColorController.text,
-                              eyeColorController.text,
-                              birthYearController.text,
-                              genderController.text,
-                              homeWorldController.text,
-                              createdController.text,
-                              editedController.text,
-                              urlController.text,
-                            );
-                          } else {
-                            // ubah data
-                            person.name = nameController.text;
-                            person.height = heightController.text;
-                            person.mass = massController.text;
-                            person.hairColor = hairColorController.text;
-                            person.skinColor = skinColorController.text;
-                            person.eyeColor = eyeColorController.text;
-                            person.birthYear = birthYearController.text;
-                            person.gender = genderController.text;
-                            person.homeworld = homeWorldController.text;
-                            person.created = createdController.text;
-                            person.edited = editedController.text;
-                            person.url = urlController.text;
-
-                          }
-                          // kembali ke layar sebelumnya dengan membawa objek contact
-                          Navigator.pop(context, person);
+                        _saveDialog(context);
                         },
                       ),
                     ),
@@ -342,7 +312,7 @@ class EntryFormState extends State<EntryForm> {
                           textScaleFactor: 1.5,
                         ),
                         onPressed: () {
-                          Navigator.pop(context);
+                          _cancelDialog(context);
                         },
                       ),
                     ),
@@ -352,5 +322,106 @@ class EntryFormState extends State<EntryForm> {
             ],
           ),
         ));
+  }
+
+  void _cancelDialog(BuildContext formContex) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Data Change won't be saved"),
+          content: new Text("Are You Sure?"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            RaisedButton(
+              child: new Text("Yes"),
+              onPressed: () {
+                log("delete dong");
+                Navigator.of(context).pop();
+                Navigator.pop(formContex);
+              },
+            ),
+            // usually buttons at the bottom of the dialog
+            RaisedButton(
+              child: new Text("NO"),
+              color: Colors.blue,
+              onPressed: () {
+                log("cancel dong");
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _saveDialog(BuildContext formContex) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("You Will Change The Data"),
+          content: new Text("Are You Sure?"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            RaisedButton(
+              child: new Text("Yes"),
+              onPressed: () {
+                log("save dong");
+                if (person == null) {
+                  // tambah data
+                  person = Person(
+                    nameController.text,
+                    heightController.text,
+                    massController.text,
+                    hairColorController.text,
+                    skinColorController.text,
+                    eyeColorController.text,
+                    birthYearController.text,
+                    genderController.text,
+                    homeWorldController.text,
+                    createdController.text,
+                    editedController.text,
+                    urlController.text,
+                  );
+                } else {
+                  // ubah data
+                  person.name = nameController.text;
+                  person.height = heightController.text;
+                  person.mass = massController.text;
+                  person.hairColor = hairColorController.text;
+                  person.skinColor = skinColorController.text;
+                  person.eyeColor = eyeColorController.text;
+                  person.birthYear = birthYearController.text;
+                  person.gender = genderController.text;
+                  person.homeworld = homeWorldController.text;
+                  person.created = createdController.text;
+                  person.edited = editedController.text;
+                  person.url = urlController.text;
+                }
+                // kembali ke layar sebelumnya dengan membawa objek contact
+                Navigator.pop(context);
+                Navigator.pop(formContex, person);
+
+              },
+            ),
+            // usually buttons at the bottom of the dialog
+            RaisedButton(
+              child: new Text("NO"),
+              color: Colors.blue,
+              onPressed: () {
+                log("cancel dong");
+                Navigator.of(context).pop();
+              },
+            ),
+        ],
+        );
+      },
+    );
   }
 }

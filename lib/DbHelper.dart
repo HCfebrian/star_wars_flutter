@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
@@ -60,11 +59,6 @@ class DbHelper {
     return _database;
   }
 
-//  Future<bool> isFirst() async {
-//    Database db = await this.database;
-//    bool mapList = await db.query(firstInit);
-//    return mapList;
-//  }
 
   Future<List<Map<String, dynamic>>> selectascd() async {
     Database db = await this.database;
@@ -78,21 +72,13 @@ class DbHelper {
     return mapList;
   }
 
-////create databases
-//  Future<int> insert(Person object) async {
-//    Database db = await this.database;
-//    int count = await db.insert('person', object.toMaap());
-//    return count;
-//  }
-  Future<List<Map<String, dynamic>>> insert(Person object) async {
+//create databases
+  Future<int> insert(Person object) async {
     Database db = await this.database;
-
-    log("REPLACE INTO person(name) VALUES (\"" +
-        object.name+"\")");
-
-    return db.rawQuery("REPLACE INTO person(name) VALUES (\'" +
-        object.name+"\')");
+    int count = await db.insert('person', object.toMaap());
+    return count;
   }
+//
 
 //update databases
   Future<int> update(Person object) async {

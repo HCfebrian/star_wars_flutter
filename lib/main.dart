@@ -44,25 +44,28 @@ class HomeState extends State<Home> {
     if (_seen) {
       updateListView();
       log("bukaan");
-    } else{
-      await prefs.setBool('seen', true);
-      Person.getPersons().then((persons) {
-        setState(() {
-          for(int i=0; i<persons.length; i++){
-            addContact(persons[i]);
-          }
-          log("nilai count adalah dalam getperson "+ count.toString());
-          log("get mass "+ persons[1].mass);
+    } else {
+      try {
+        Person.getPersons().then((persons) {
+          setState(() {
+            for (int i = 0; i < persons.length; i++) {
+              addContact(persons[i]);
+            }
+            log("nilai count adalah dalam getperson " + count.toString());
+            log("get mass " + persons[1].mass);
+          });
         });
-      });
+        await prefs.setBool('seen', true);
+      } catch (e) {
+        log("something went wrong " + e.toString());
+      }
     }
   }
 
   void initState() {
     super.initState();
     log("jalan njir");
-      checkFirstSeen();
-
+    checkFirstSeen();
   }
 
   DbHelper dbHelper = DbHelper();
@@ -91,8 +94,7 @@ class HomeState extends State<Home> {
                   Icons.cached,
                   size: 26.0,
                 ),
-              )
-          ),
+              )),
         ],
       ),
       body: createListView(false),
@@ -105,7 +107,6 @@ class HomeState extends State<Home> {
         },
       ),
     );
-
   }
 
   Future<Person> navigateToEntryForm(
@@ -138,7 +139,7 @@ class HomeState extends State<Home> {
             trailing: GestureDetector(
               child: Icon(Icons.delete),
               onTap: () {
-                deleteContact(listPerson[index]);
+              _showDialog(listPerson[index]);
               },
             ),
             onTap: () async {
@@ -155,9 +156,9 @@ class HomeState extends State<Home> {
   //buat contact
   void addContact(Person object) async {
     log(object.toMaap().toString());
-    List<Map<String, dynamic>>result = await dbHelper.insert(object);
+    int result = await dbHelper.insert(object);
     updateListView();
-    if (result.length > 0) {
+    if (result > 0) {
       updateListView();
     }
   }
@@ -185,18 +186,49 @@ class HomeState extends State<Home> {
       Future<List<Person>> listPersonFuture = dbHelper.getpersonList();
       listPersonFuture.then((listPerson) {
         setState(() {
-
-          if(asce == true){
+          if (asce == true) {
             this.listPerson = listPerson;
-          }else{
+          } else {
             this.listPerson = listPerson.reversed.toList();
           }
           this.count = listPerson.length;
-
-
         });
       });
     });
   }
-}
 
+  // user defined function
+  void _showDialog(Person object) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Delate " + object.name),
+          content: new Text("Are You Sure?"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            RaisedButton(
+              child: new Text("Yes"),
+              onPressed: () {
+                log("delete dong");
+                deleteContact(object);
+                Navigator.of(context).pop();
+              },
+            ),
+            // usually buttons at the bottom of the dialog
+            RaisedButton(
+              child: new Text("NO"),
+              color: Colors.blue,
+              onPressed: () {
+                log("cancel dong");
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
