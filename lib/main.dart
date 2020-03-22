@@ -2,11 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:starwarsapplication/bloc/person_bloc.dart';
 
-import 'DbHelper.dart';
-import 'enttryform.dart';
-import 'model/Person.dart';
+import 'models/Persons.dart';
+import 'ui/enttryform.dart';
 
 void main() => runApp(MyApp());
 
@@ -31,30 +30,17 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  List<Person> listPerson;
-  int count = 0;
-  bool asce = true;
+
+  bool descending = false;
 
   Future checkFirstSeen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool _seen = (prefs.getBool('seen') ?? false);
-
-    log("boool " + _seen.toString());
-
     if (_seen) {
-      updateListView();
-      log("bukaan");
+      bloc.getAllPerson();
     } else {
       try {
-        Person.getPersons().then((persons) {
-          setState(() {
-            for (int i = 0; i < persons.length; i++) {
-              addContact(persons[i]);
-            }
-            log("nilai count adalah dalam getperson " + count.toString());
-            log("get mass " + persons[1].mass);
-          });
-        });
+        bloc.fetchAllPerson();
         await prefs.setBool('seen', true);
       } catch (e) {
         log("something went wrong " + e.toString());
@@ -64,31 +50,27 @@ class HomeState extends State<Home> {
 
   void initState() {
     super.initState();
-    log("jalan njir");
     checkFirstSeen();
   }
 
-  DbHelper dbHelper = DbHelper();
+  @override
+  void dispose() {
+    super.dispose();
+    bloc.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (listPerson == null) {
-      listPerson = List<Person>();
-    }
     return Scaffold(
       appBar: AppBar(
         title: Text('Star Wars '),
-//        leading: Icon(
-//          Icons.cached,
-//        ),
         actions: <Widget>[
           Padding(
               padding: EdgeInsets.only(right: 20.0),
               child: GestureDetector(
                 onTap: () {
-                  asce = !asce;
-                  updateListView();
-                  log(listPerson[1].name);
+                  descending = !descending;
+                  bloc.getAllPerson();
                 },
                 child: Icon(
                   Icons.cached,
@@ -97,13 +79,27 @@ class HomeState extends State<Home> {
               )),
         ],
       ),
-      body: createListView(false),
+      body: StreamBuilder(
+        stream: bloc.allPerson,
+        builder: (context, AsyncSnapshot<List<Person>> snapshot) {
+          if (snapshot.hasData) {
+//            return buildList(snapshot);
+            log("has data");
+            return createListView(descending, snapshot);
+          } else if (snapshot.hasError) {
+            log("error");
+            return Text(snapshot.error.toString());
+          }
+          return Center(child: CircularProgressIndicator());
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         tooltip: 'Tambah Data',
         onPressed: () async {
           var contact = await navigateToEntryForm(context, null);
-          if (contact != null) addContact(contact);
+          bloc.insetPerson(contact);
+          log("ini nih nama" + contact.name);
         },
       ),
     );
@@ -116,85 +112,6 @@ class HomeState extends State<Home> {
       return EntryForm(person);
     }));
     return result;
-  }
-
-  ListView createListView(bool dscd) {
-    TextStyle textStyle = Theme.of(context).textTheme.subhead;
-    return ListView.builder(
-      reverse: dscd,
-      itemCount: count,
-      itemBuilder: (BuildContext context, int index) {
-        return Card(
-          color: Colors.white,
-          elevation: 2.0,
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.red,
-              child: Icon(Icons.people),
-            ),
-            title: Text(
-              this.listPerson[index].name,
-              style: textStyle,
-            ),
-            trailing: GestureDetector(
-              child: Icon(Icons.delete),
-              onTap: () {
-              _showDialog(listPerson[index]);
-              },
-            ),
-            onTap: () async {
-              var contact =
-                  await navigateToEntryForm(context, this.listPerson[index]);
-              if (contact != null) editContact(contact);
-            },
-          ),
-        );
-      },
-    );
-  }
-
-  //buat contact
-  void addContact(Person object) async {
-    log(object.toMaap().toString());
-    int result = await dbHelper.insert(object);
-    updateListView();
-    if (result > 0) {
-      updateListView();
-    }
-  }
-
-  //edit contact
-  void editContact(Person object) async {
-    int result = await dbHelper.update(object);
-    if (result > 0) {
-      updateListView();
-    }
-  }
-
-  //delete contact
-  void deleteContact(Person object) async {
-    var result = await dbHelper.delete(object.name);
-    if (result > 0) {
-      updateListView();
-    }
-  }
-
-  //update contact
-  void updateListView() {
-    final Future<Database> dbFuture = dbHelper.initDb();
-    dbFuture.then((database) {
-      Future<List<Person>> listPersonFuture = dbHelper.getpersonList();
-      listPersonFuture.then((listPerson) {
-        setState(() {
-          if (asce == true) {
-            this.listPerson = listPerson;
-          } else {
-            this.listPerson = listPerson.reversed.toList();
-          }
-          this.count = listPerson.length;
-        });
-      });
-    });
   }
 
   // user defined function
@@ -213,7 +130,7 @@ class HomeState extends State<Home> {
               child: new Text("Yes"),
               onPressed: () {
                 log("delete dong");
-                deleteContact(object);
+                bloc.deletePerson(object.url);
                 Navigator.of(context).pop();
               },
             ),
@@ -230,5 +147,47 @@ class HomeState extends State<Home> {
         );
       },
     );
+  }
+
+  ListView createListView(bool dscd, AsyncSnapshot<List<Person>> snapshot) {
+    TextStyle textStyle = Theme.of(context).textTheme.subhead;
+    return ListView.builder(
+//      reverse: true,
+      itemCount: snapshot.data.length,
+      itemBuilder: (BuildContext context, int index) {
+        return Card(
+          color: Colors.white,
+          elevation: 2.0,
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: Colors.red,
+              child: Icon(Icons.people),
+            ),
+            title: Text(
+              snapshot
+                  .data[dscd ? (snapshot.data.length - 1) - index : index].name,
+              style: textStyle,
+            ),
+            trailing: GestureDetector(
+              child: Icon(Icons.delete),
+              onTap: () {
+                _showDialog(snapshot.data[dscd?(snapshot.data.length - 1) - index: index]);
+              },
+            ),
+            onTap: () async {
+              Person contact = await navigateToEntryForm(
+                  context,
+                  snapshot
+                      .data[dscd ? (snapshot.data.length - 1) - index : index]);
+              log("ini nilai kembalian kalau edit " +
+                  contact.toJson().toString());
+              if (contact != null) bloc.updatePerson(contact);
+              bloc.getAllPerson();
+            },
+          ),
+        );
+      },
+    );
+
   }
 }

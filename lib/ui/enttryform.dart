@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
-import 'model/Person.dart';
+import '../models/Persons.dart';
 
 class EntryForm extends StatefulWidget {
   final Person person;
@@ -365,7 +365,7 @@ class EntryFormState extends State<EntryForm> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("You Will Change The Data"),
+          title: new Text("Save The Data"),
           content: new Text("Are You Sure?"),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
@@ -389,6 +389,7 @@ class EntryFormState extends State<EntryForm> {
                     editedController.text,
                     urlController.text,
                   );
+
                 } else {
                   // ubah data
                   person.name = nameController.text;

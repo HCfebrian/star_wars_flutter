@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-import 'model/Person.dart';
+import '../models/Persons.dart';
 
 //pubspec.yml
 //kelass Dbhelper
@@ -24,9 +25,9 @@ class DbHelper {
   Future<Database> initDb() async {
     //untuk menentukan nama database dan lokasi yg dibuat
     Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path + 'starwarsdb.db';
+    String path = directory.path + 'starwardb.db';
     //create, read databases
-    var todoDatabase = openDatabase(path, version: 5, onCreate: _createDb);
+    var todoDatabase = openDatabase(path, version: 1, onCreate: _createDb);
     //mengembalikan nilai object sebagai hasil dari fungsinya
     return todoDatabase;
   }
@@ -35,7 +36,6 @@ class DbHelper {
   void _createDb(Database db, int version) async {
     await db.execute('''
       CREATE TABLE person (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         height TEXT,
         mass TEXT,
@@ -47,7 +47,7 @@ class DbHelper {
         homeworld TEXT,
         created TEXT,
         edited TEXT,
-        url TEXT 
+        url TEXT PRIMARY KEY
       )
     ''');
   }
@@ -66,32 +66,27 @@ class DbHelper {
     return mapList;
   }
 
-  Future<List<Map<String, dynamic>>> selectdscd() async {
-    Database db = await this.database;
-    var mapList = await db.query('person', orderBy: 'name');
-    return mapList;
-  }
-
 //create databases
   Future<int> insert(Person object) async {
     Database db = await this.database;
-    int count = await db.insert('person', object.toMaap());
+    int count = await db.insert('person', object.toJson());
     return count;
   }
 //
 
 //update databases
   Future<int> update(Person object) async {
+    log("ini nilai person didalam db helper " + object.toJson().toString());
     Database db = await this.database;
-    int count = await db.update('person', object.toMaap(),
-        where: 'name=?', whereArgs: [object.name]);
+    int count = await db.update('person', object.toJson(),
+        where: 'url=?', whereArgs: [object.url]);
     return count;
   }
 
 //delete databases
-  Future<int> delete(String name) async {
+  Future<int> delete(String url) async {
     Database db = await this.database;
-    int count = await db.delete('person', where: 'name=?', whereArgs: [name]);
+    int count = await db.delete('person', where: 'url=?', whereArgs: [url]);
     return count;
   }
 
@@ -102,6 +97,7 @@ class DbHelper {
     for (int i = 0; i < count; i++) {
       personList.add(Person.fromJson(personMapList[i]));
     }
+    log(personList[0].name);
     return personList;
   }
 }

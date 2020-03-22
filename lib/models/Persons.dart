@@ -1,7 +1,34 @@
-import 'dart:convert';
-import 'dart:developer';
+class Persons {
+  int count;
+  String next;
+  Null previous;
+  List<Person> persons;
 
-import 'package:http/http.dart' as http;
+  Persons({this.count, this.next, this.previous, this.persons});
+
+  Persons.fromJson(Map<String, dynamic> json) {
+    count = json['count'];
+    next = json['next'];
+    previous = json['previous'];
+    if (json['results'] != null) {
+      persons = new List<Person>();
+      json['results'].forEach((v) {
+        persons.add(new Person.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['count'] = this.count;
+    data['next'] = this.next;
+    data['previous'] = this.previous;
+    if (this.persons != null) {
+      data['results'] = this.persons.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
 
 class Person {
   String name;
@@ -13,6 +40,7 @@ class Person {
   String birthYear;
   String gender;
   String homeworld;
+
 //  List<String> films;
 //  List<String> species;
 //  List<String> vehicles;
@@ -37,7 +65,8 @@ class Person {
 //      this.starships,
       this.created,
       this.edited,
-      this.url);
+      this.url
+      );
 
   Person.fromJson(Map<String, dynamic> json) {
     name = json['name'];
@@ -58,24 +87,7 @@ class Person {
     url = json['url'];
   }
 
-  static Future<List<Person>> getPersons() async {
-    String apiURL = "https://swapi.co/api/people/";
-
-    var apiResult = await http.get(apiURL);
-    var jsonObject = json.decode(apiResult.body);
-
-    List<dynamic> listPerson = (jsonObject as Map<String, dynamic>)['results'];
-
-    List<Person> persons = [];
-    for (int i = 0; i < listPerson.length; i++) {
-      persons.add(Person.fromJson(listPerson[i]));
-    }
-
-    log("banyaknya getperson" + persons.length.toString());
-    return persons;
-  }
-
-  Map<String, dynamic> toMaap() {
+  Map<String, dynamic> toJson() {
     Map<String, dynamic> map = Map<String, dynamic>();
     map['name'] = name;
     map['height'] = height;
