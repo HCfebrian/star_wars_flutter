@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:rxdart/rxdart.dart';
 import 'package:starwarsapplication/models/Persons.dart';
 import 'package:starwarsapplication/resources/repository.dart';
