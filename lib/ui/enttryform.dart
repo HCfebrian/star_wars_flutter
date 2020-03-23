@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 import '../models/Persons.dart';
@@ -50,10 +48,10 @@ class EntryFormState extends State<EntryForm> {
       editedController.text = person.edited;
       urlController.text = person.url;
     }
-    //rubah
+    //ubah
     return Scaffold(
         appBar: AppBar(
-          title: person == null ? Text('Tambah') : Text('Rubah'),
+          title: person == null ? Text('Tambah') : Text('Data'),
           leading: IconButton(
             tooltip: 'Previous choice',
             icon: const Icon(Icons.arrow_back),
@@ -297,14 +295,15 @@ class EntryFormState extends State<EntryForm> {
                           textScaleFactor: 1.5,
                         ),
                         onPressed: () {
-                          urlController.text.isEmpty ? _textEmpty = true : _saveDialog(context) ;
+                          urlController.text.isEmpty
+                              ? _textEmpty = true
+                              : _saveDialog(context);
                         },
                       ),
                     ),
                     Container(
                       width: 5.0,
                     ),
-                    // tombol batal
                     Expanded(
                       child: RaisedButton(
                         color: Theme.of(context).primaryColorDark,
@@ -327,16 +326,13 @@ class EntryFormState extends State<EntryForm> {
   }
 
   void _cancelDialog(BuildContext formContex) {
-    // flutter defined function
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        // return object of type Dialog
         return AlertDialog(
           title: new Text("Data Change won't be saved"),
           content: new Text("Are You Sure?"),
           actions: <Widget>[
-            // usually buttons at the bottom of the dialog
             RaisedButton(
               child: new Text("Yes"),
               onPressed: () {
@@ -344,10 +340,9 @@ class EntryFormState extends State<EntryForm> {
                 Navigator.pop(formContex);
               },
             ),
-            // usually buttons at the bottom of the dialog
             RaisedButton(
               child: new Text("NO"),
-              color: Colors.blue,
+              color: Colors.red,
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -359,20 +354,16 @@ class EntryFormState extends State<EntryForm> {
   }
 
   void _saveDialog(BuildContext formContex) {
-    // flutter defined function
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        // return object of type Dialog
         return AlertDialog(
-          title: new Text("Save The Data"),
-          content: new Text("Are You Sure?"),
+          title: Text("Save The Data"),
+          content: Text("Are You Sure?"),
           actions: <Widget>[
-            // usually buttons at the bottom of the dialog
             RaisedButton(
-              child: new Text("Yes"),
+              child: Text("Yes"),
               onPressed: () {
-                log("save dong");
                 if (person == null) {
                   // tambah data
                   person = Person(
@@ -389,7 +380,6 @@ class EntryFormState extends State<EntryForm> {
                     editedController.text,
                     urlController.text,
                   );
-
                 } else {
                   // ubah data
                   person.name = nameController.text;
@@ -408,7 +398,6 @@ class EntryFormState extends State<EntryForm> {
                 // kembali ke layar sebelumnya dengan membawa objek contact
                 Navigator.pop(context);
                 Navigator.pop(formContex, person);
-
               },
             ),
             // usually buttons at the bottom of the dialog
@@ -416,11 +405,10 @@ class EntryFormState extends State<EntryForm> {
               child: new Text("NO"),
               color: Colors.blue,
               onPressed: () {
-                log("cancel dong");
                 Navigator.of(context).pop();
               },
             ),
-        ],
+          ],
         );
       },
     );

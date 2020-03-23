@@ -23,7 +23,6 @@ class PersonBloc{
   }
 
   updatePerson(Person person) async{
-    log("dibagian person_bloc"+ person.toJson().toString());
     await _repository.updatePerson(person);
     getAllPerson();
   }

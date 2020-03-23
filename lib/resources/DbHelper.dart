@@ -22,7 +22,7 @@ class DbHelper {
 
   Future<Database> initDb() async {
     Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path + 'strwrs.db';
+    String path = directory.path + 'strwr.db';
     var db = openDatabase(path, version: 1, onCreate: _createDb);
     return db;
   }
@@ -43,8 +43,6 @@ class DbHelper {
         edited TEXT,
         url TEXT PRIMARY KEY
       )
-      
-      CREATE TABLE species()
     ''');
   }
 
@@ -86,7 +84,6 @@ class DbHelper {
     for (int i = 0; i < count; i++) {
       personList.add(Person.fromJson(personMapList[i]));
     }
-    log(personList[0].name);
     return personList;
   }
 }

@@ -82,8 +82,7 @@ class HomeState extends State<Home> {
         stream: bloc.allPerson,
         builder: (context, AsyncSnapshot<List<Person>> snapshot) {
           if (snapshot.hasData) {
-//            return buildList(snapshot);
-            log("has data");
+
             return createListView(descending, snapshot);
           } else if (snapshot.hasError) {
             log("error");
@@ -98,7 +97,6 @@ class HomeState extends State<Home> {
         onPressed: () async {
           var person = await navigateToEntryForm(context, null);
           bloc.insetPerson(person);
-          log("ini nih nama" + person.name);
         },
       ),
     );
@@ -113,32 +111,25 @@ class HomeState extends State<Home> {
     return result;
   }
 
-  // user defined function
   void _showDialog(Person object) {
-    // flutter defined function
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        // return object of type Dialog
         return AlertDialog(
           title: new Text("Delate " + object.name),
           content: new Text("Are You Sure?"),
           actions: <Widget>[
-            // usually buttons at the bottom of the dialog
             RaisedButton(
               child: new Text("Yes"),
               onPressed: () {
-                log("delete dong");
                 bloc.deletePerson(object.url);
                 Navigator.of(context).pop();
               },
             ),
-            // usually buttons at the bottom of the dialog
             RaisedButton(
               child: new Text("NO"),
               color: Colors.blue,
               onPressed: () {
-                log("cancel dong");
                 Navigator.of(context).pop();
               },
             ),
@@ -151,7 +142,6 @@ class HomeState extends State<Home> {
   ListView createListView(bool dscd, AsyncSnapshot<List<Person>> snapshot) {
     TextStyle textStyle = Theme.of(context).textTheme.subhead;
     return ListView.builder(
-//      reverse: true,
       itemCount: snapshot.data.length,
       itemBuilder: (BuildContext context, int index) {
         return Card(
@@ -178,7 +168,6 @@ class HomeState extends State<Home> {
                   context,
                   snapshot
                       .data[dscd ? (snapshot.data.length - 1) - index : index]);
-
               if (person != null) bloc.updatePerson(person);
               bloc.getAllPerson();
             },
