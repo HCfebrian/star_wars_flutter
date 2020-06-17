@@ -1,6 +1,6 @@
 # starwarsapplication
 
-A new Flutter application.
+CRUD Application to input list of StartWars Chacacter.
 
 ## Getting Started
 
